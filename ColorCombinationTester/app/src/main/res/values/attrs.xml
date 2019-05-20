@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="CircleSelector">
+        <attr name="radius" format="float|reference"/>
+        <attr name="strokeWidth" format="float|reference"/>
+        <attr name="max" format="float|reference"/>
+        <attr name="startAngle" format="float|reference"/>
+        <attr name="circleColor" format="color|reference"/>
+        <attr name="selectorColor" format="color|reference"/>
+        <attr name="textColor" format="color|reference"/>
+    </declare-styleable>
+</resources>
