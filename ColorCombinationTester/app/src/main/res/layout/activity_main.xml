@@ -16,9 +16,9 @@
             app:radius="300"
             app:strokeWidth="50"
             app:max="100"
-            app:startAngle="90"
-            app:circleColor="#FF0000"
-            app:selectorColor="#3FFF00"
+            app:startAngle="270"
+            app:circleColor="#FFC107"
+            app:selectorColor="#2196F3"
             app:textColor="#007BFF"
             app:layout_constraintBottom_toTopOf="@+id/guideline" app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintVertical_bias="1.0"/>
