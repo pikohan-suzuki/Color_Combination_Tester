@@ -199,26 +199,15 @@ class CircleSelector : View {
                 val y = motionEvent.y - height / 2f
                 var rad = 0f
                 if (isHold) {
-
                     if (y <= 0) {
                         rad =acos(x/sqrt(pow(x.toDouble(),2.toDouble())+pow(y.toDouble(),2.toDouble()))).toFloat()
-//                        Log.d("aaaaaaaaaaaaa","yyyyyy: "+sqrt(pow((width-strokeWidth).toDouble(),2.toDouble())-pow(x.toDouble(),2.toDouble())))
-//                        Log.d( "aaaaaaaaaaaaa","cccccc: "+sqrt(pow(x.toDouble(),2.toDouble())+pow(y.toDouble(),2.toDouble())))
-//                        Log.d("aaaaaaaaaaaaa","rrrrrr: "+acos(x/sqrt(pow(x.toDouble(),2.toDouble())+pow(y.toDouble(),2.toDouble()))))
                     } else {
-                        rad = 6 - acos(
-                            x / sqrt(
-                                pow(x.toDouble(), 2.toDouble()) + pow(
-                                    y.toDouble(),
-                                    2.toDouble()
-                                )
-                            )
-                        ).toFloat()
-//                    }
+                        rad = 6 - acos(x / sqrt(pow(x.toDouble(), 2.toDouble()) + pow(y.toDouble(), 2.toDouble()))).toFloat()
                     }
                     Log.d("aaaaaaaaaaaa",rad.toString())
+                    update(((2*PI-rad+(360-startAngle)*PI/180)*max/2/PI).toFloat())
                 }
-                update((rad*max/4/PI).toFloat())
+
                 return@OnTouchListener true
             }
             MotionEvent.ACTION_UP -> {
