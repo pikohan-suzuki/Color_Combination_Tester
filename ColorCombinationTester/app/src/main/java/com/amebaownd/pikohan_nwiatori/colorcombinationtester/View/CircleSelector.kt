@@ -10,8 +10,7 @@ import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import com.amebaownd.pikohan_nwiatori.colorcombinationtester.R
-import java.lang.Math.pow
-import java.lang.Math.sqrt
+import java.lang.Math.*
 import kotlin.math.PI
 import kotlin.math.abs
 import kotlin.math.cos
@@ -48,6 +47,7 @@ class CircleSelector : View {
     //表示するデータ
     private var data = 50f
 
+    private var isHold = false
     private fun initView(attrs: AttributeSet?) {
         val typedArray = context.obtainStyledAttributes(attrs, R.styleable.CircleSelector)
         setRadius(typedArray.getFloat(R.styleable.CircleSelector_radius, 30f))
@@ -89,6 +89,23 @@ class CircleSelector : View {
             strokeWidth * 2 / 3,
             selectorPaint
         )
+        val touchWidth = strokeWidth * 4
+        for (i in 0 until width) {
+            val x = i - width / 2f
+            val y1 = sqrt(pow((width.toDouble() - touchWidth) / 2f, 2.toDouble()) - pow(x.toDouble(), 2.toDouble()))
+            val y2 = sqrt(pow(width.toDouble() / 2f, 2.toDouble()) - pow(x.toDouble(), 2.toDouble()))
+            val y3 = -sqrt(
+                java.lang.Math.pow((width.toDouble() - touchWidth) / 2f, 2.toDouble()) - Math.pow(
+                    x.toDouble(),
+                    2.toDouble()
+                )
+            )
+            val y4 = -sqrt(pow(width.toDouble() / 2f, 2.toDouble()) - pow(x.toDouble(), 2.toDouble()))
+            canvas.drawPoint(x + width / 2f, y1.toFloat() + height / 2f, Paint().apply { this.color = Color.BLUE })
+            canvas.drawPoint(x + width / 2f, y2.toFloat() + height / 2f, Paint().apply { this.color = Color.BLUE })
+            canvas.drawPoint(x + width / 2f, y3.toFloat() + height / 2f, Paint().apply { this.color = Color.BLUE })
+            canvas.drawPoint(x + width / 2f, y4.toFloat() + height / 2f, Paint().apply { this.color = Color.BLUE })
+        }
     }
 
     fun update(data: Float) {
@@ -143,23 +160,76 @@ class CircleSelector : View {
 
     private val onTouchListener = View.OnTouchListener { view: View, motionEvent: MotionEvent ->
         when (motionEvent.action) {
-            MotionEvent.ACTION_DOWN->{
-                val x =motionEvent.x-width/2f
-                val y = motionEvent.y-height/2f
-                val touchWidth=strokeWidth*4
-                Log.d("aaaaaaaaa","x:"+ x +"  y:"+y+"  "+sqrt(pow((width.toDouble()-strokeWidth)/2f,2.toDouble())-pow(x.toDouble(),2.toDouble()))+"    "+sqrt(pow(width.toDouble()/2f,2.toDouble())-pow(x.toDouble(),2.toDouble())))
-                if(y>=sqrt(pow((width.toDouble()-touchWidth)/2f,2.toDouble())-pow(x.toDouble(),2.toDouble())) && y<= sqrt(pow(width.toDouble()/2f,2.toDouble())-pow(x.toDouble(),2.toDouble())) ||
-                    y<=-sqrt(pow((width.toDouble()-touchWidth)/2f,2.toDouble())-pow(x.toDouble(),2.toDouble())) && y>= -sqrt(pow(width.toDouble()/2f,2.toDouble())-pow(x.toDouble(),2.toDouble()))){
-                    update(0f)
+            MotionEvent.ACTION_DOWN -> {
+                Log.d("MOTION_EVENT","ACTION_DOWN")
+                val x = motionEvent.x - width / 2f
+                val y = motionEvent.y - height / 2f
+                val touchWidth = strokeWidth * 4
+                if (!(y < sqrt(
+                        pow((width.toDouble() - touchWidth) / 2f, 2.toDouble()) - pow(
+                            x.toDouble(),
+                            2.toDouble()
+                        )
+                    )) && y <= sqrt(pow(width.toDouble() / 2f, 2.toDouble()) - pow(x.toDouble(), 2.toDouble())) ||
+                    y <= -sqrt(
+                        pow((width.toDouble() - touchWidth) / 2f, 2.toDouble()) - pow(
+                            x.toDouble(),
+                            2.toDouble()
+                        )
+                    ) && !(y < -sqrt(pow(width.toDouble() / 2f, 2.toDouble()) - pow(x.toDouble(), 2.toDouble())))
+                ) {
+                    val rad = atan((-y / x).toDouble())
+                    var angle = 0.toDouble()
+                    if (x >= 0 && y < 0)
+                        angle = 90 - rad * 360 / PI / 2
+                    else if (x >= 0 && y >= 0)
+                        angle = 90 - rad * 360 / PI / 2
+                    else if (x <= 0 && y > 0)
+                        angle = 180 + 90 - rad * 360 / PI / 2
+                    else if (x < 0f && y <= 0)
+                        angle = 180 + 90 - rad * 360 / PI / 2
+                    update((angle * max / 360).toFloat())
                 }
+                isHold = true
                 return@OnTouchListener true
             }
-            else->{
+            MotionEvent.ACTION_MOVE -> {
+                Log.d("MOTION_EVENT","ACTION_MOVE")
+                val x = motionEvent.x - width / 2f
+                val y = motionEvent.y - height / 2f
+                var rad = 0f
+                if (isHold) {
+
+                    if (y <= 0) {
+                        rad =acos(x/sqrt(pow(x.toDouble(),2.toDouble())+pow(y.toDouble(),2.toDouble()))).toFloat()
+//                        Log.d("aaaaaaaaaaaaa","yyyyyy: "+sqrt(pow((width-strokeWidth).toDouble(),2.toDouble())-pow(x.toDouble(),2.toDouble())))
+//                        Log.d( "aaaaaaaaaaaaa","cccccc: "+sqrt(pow(x.toDouble(),2.toDouble())+pow(y.toDouble(),2.toDouble())))
+//                        Log.d("aaaaaaaaaaaaa","rrrrrr: "+acos(x/sqrt(pow(x.toDouble(),2.toDouble())+pow(y.toDouble(),2.toDouble()))))
+                    } else {
+                        rad = 6 - acos(
+                            x / sqrt(
+                                pow(x.toDouble(), 2.toDouble()) + pow(
+                                    y.toDouble(),
+                                    2.toDouble()
+                                )
+                            )
+                        ).toFloat()
+//                    }
+                    }
+                    Log.d("aaaaaaaaaaaa",rad.toString())
+                }
+                update((rad*max/4/PI).toFloat())
+                return@OnTouchListener true
+            }
+            MotionEvent.ACTION_UP -> {
+                Log.d("MOTION_EVENT","ACTION_UP")
+                isHold = false
                 return@OnTouchListener false
             }
-
+            else -> {
+                return@OnTouchListener true
+            }
         }
-
     }
 
 }
