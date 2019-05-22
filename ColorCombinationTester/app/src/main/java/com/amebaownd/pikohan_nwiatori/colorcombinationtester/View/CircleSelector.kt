@@ -1,20 +1,14 @@
 package com.amebaownd.pikohan_nwiatori.colorcombinationtester.View
 
 import android.content.Context
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Paint
-import android.graphics.Rect
+import android.graphics.*
 import android.util.AttributeSet
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import com.amebaownd.pikohan_nwiatori.colorcombinationtester.R
-import java.lang.Math.*
-import kotlin.math.PI
-import kotlin.math.abs
-import kotlin.math.cos
-import kotlin.math.sin
+import java.lang.Math.pow
+import kotlin.math.*
 
 class CircleSelector : View {
     constructor(context: Context) : super(context, null)
@@ -46,8 +40,11 @@ class CircleSelector : View {
     private var startAngle = 0f
     //表示するデータ
     private var data = 50f
-
+    //ホールド中か否か
     private var isHold = false
+
+    private var longSide=0
+    private var shortSide=0
     private fun initView(attrs: AttributeSet?) {
         val typedArray = context.obtainStyledAttributes(attrs, R.styleable.CircleSelector)
         setRadius(typedArray.getFloat(R.styleable.CircleSelector_radius, 30f))
@@ -58,53 +55,43 @@ class CircleSelector : View {
         setSelectorColor(typedArray.getColor(R.styleable.CircleSelector_selectorColor, Color.RED))
         setTextColor(typedArray.getColor(R.styleable.CircleSelector_textColor, Color.GREEN))
         circlePaint.style = Paint.Style.STROKE
+        textPaint.textSize=100f
         this.setOnTouchListener(onTouchListener)
     }
 
     override fun onDraw(canvas: Canvas?) {
-//        var rect = rect
+        var rectF = RectF()
+        if(width<=height){
+            rectF.left=0f+strokeWidth
+            rectF.top=(height-width)/2f+strokeWidth
+            rectF.right=width.toFloat()-strokeWidth
+            rectF.bottom=width.toFloat()+(height-width)/2f-strokeWidth
 
-        canvas!!.drawArc(
-            0f + strokeWidth,
-            (height - width) / 2f + strokeWidth,
-            width.toFloat() - strokeWidth,
-            width.toFloat() + (height - width) / 2f - strokeWidth,
-            startAngle,
-            data * 360 / max,
-            true,
-            circlePaint
-        ) //円の描画
-        canvas.drawArc(
-            0f + strokeWidth,
-            (height - width) / 2f + strokeWidth,
-            width.toFloat() - strokeWidth,
-            width.toFloat() + (height - width) / 2f - strokeWidth,
-            startAngle,
-            360f,
-            true,
-            Paint().apply { this.color = Color.WHITE })
-        canvas.drawCircle(
-            (width / 2f + (width - strokeWidth) / 2f * sin(data / max * 2 * PI)).toFloat(),
-            height / 2f - (width - strokeWidth) / 2f * cos(data / max * 2 * PI).toFloat(),
-            strokeWidth * 2 / 3,
-            selectorPaint
-        )
-        val touchWidth = strokeWidth * 4
+        }else{
+            rectF.left=(width-height)/2f+strokeWidth
+            rectF.top=0f+strokeWidth
+            rectF.right=(width+height)/2f-strokeWidth
+            rectF.bottom=height-strokeWidth
+        }
+        canvas!!.drawArc(rectF, startAngle,data * 360 / max, false, circlePaint) //円の描画
+        canvas.drawArc(rectF.left + strokeWidth, rectF.top + strokeWidth, rectF.right - strokeWidth,
+            rectF.bottom - strokeWidth, startAngle, 360f, true, Paint().apply { this.color = Color.WHITE })
+        canvas.drawCircle((width / 2f + (rectF.right-width/2f) * cos(2*PI-(data/max*2*PI)+(360-startAngle)*PI/180)).toFloat(), height / 2f - (rectF.right-width/2f)  * sin(2*PI-(data/max*2*PI)+(360-startAngle)*PI/180).toFloat(),
+            strokeWidth * 2 / 3, selectorPaint)
+
+        val touchWidth = strokeWidth * 1.5f
         for (i in 0 until width) {
             val x = i - width / 2f
-            val y1 = sqrt(pow((width.toDouble() - touchWidth) / 2f, 2.toDouble()) - pow(x.toDouble(), 2.toDouble()))
-            val y2 = sqrt(pow(width.toDouble() / 2f, 2.toDouble()) - pow(x.toDouble(), 2.toDouble()))
-            val y3 = -sqrt(
-                java.lang.Math.pow((width.toDouble() - touchWidth) / 2f, 2.toDouble()) - Math.pow(
-                    x.toDouble(),
-                    2.toDouble()
-                )
-            )
-            val y4 = -sqrt(pow(width.toDouble() / 2f, 2.toDouble()) - pow(x.toDouble(), 2.toDouble()))
+            val y1 = sqrt(pow(((rectF.right - (width)/2f-touchWidth)).toDouble(), 2.toDouble()) - pow(x.toDouble(), 2.toDouble()))
+            val y2 = sqrt(pow(((rectF.right+touchWidth) -width/2f).toDouble(), 2.toDouble()) - pow(x.toDouble(), 2.toDouble()))
+            val y3 =  -sqrt(pow(((rectF.right - (width)/2f-touchWidth) ).toDouble(), 2.toDouble()) - pow(x.toDouble(), 2.toDouble()))
+            val y4 = -sqrt(pow(((rectF.right+touchWidth) -width/2f).toDouble(), 2.toDouble()) - pow(x.toDouble(), 2.toDouble()))
+            Log.d("aaaaaaaaaa",""+y1+"     "+y2+"        "+y3+"       "+y4)
             canvas.drawPoint(x + width / 2f, y1.toFloat() + height / 2f, Paint().apply { this.color = Color.BLUE })
             canvas.drawPoint(x + width / 2f, y2.toFloat() + height / 2f, Paint().apply { this.color = Color.BLUE })
             canvas.drawPoint(x + width / 2f, y3.toFloat() + height / 2f, Paint().apply { this.color = Color.BLUE })
             canvas.drawPoint(x + width / 2f, y4.toFloat() + height / 2f, Paint().apply { this.color = Color.BLUE })
+            canvas.drawText(data.toInt().toString(),width/2f-50*data.toInt().toString().length/2f,height/2f+50,textPaint)
         }
     }
 
@@ -159,26 +146,38 @@ class CircleSelector : View {
     }
 
     private val onTouchListener = View.OnTouchListener { view: View, motionEvent: MotionEvent ->
+        var rectF = RectF()
+        if(width<=height){
+            rectF.left=0f+strokeWidth
+            rectF.top=(height-width)/2f+strokeWidth
+            rectF.right=width.toFloat()-strokeWidth
+            rectF.bottom=width.toFloat()+(height-width)/2f-strokeWidth
+
+        }else{
+            rectF.left=(width-height)/2f+strokeWidth
+            rectF.top=0f+strokeWidth
+            rectF.right=(width+height)/2f-strokeWidth
+            rectF.bottom=height-strokeWidth
+        }
         when (motionEvent.action) {
+
             MotionEvent.ACTION_DOWN -> {
                 Log.d("MOTION_EVENT","ACTION_DOWN")
                 val x = motionEvent.x - width / 2f
                 val y = motionEvent.y - height / 2f
-                val touchWidth = strokeWidth * 4
-                if (!(y < sqrt(
-                        pow((width.toDouble() - touchWidth) / 2f, 2.toDouble()) - pow(
-                            x.toDouble(),
-                            2.toDouble()
-                        )
-                    )) && y <= sqrt(pow(width.toDouble() / 2f, 2.toDouble()) - pow(x.toDouble(), 2.toDouble())) ||
-                    y <= -sqrt(
-                        pow((width.toDouble() - touchWidth) / 2f, 2.toDouble()) - pow(
-                            x.toDouble(),
-                            2.toDouble()
-                        )
-                    ) && !(y < -sqrt(pow(width.toDouble() / 2f, 2.toDouble()) - pow(x.toDouble(), 2.toDouble())))
-                ) {
-                    val rad = atan((-y / x).toDouble())
+                val touchWidth = strokeWidth * 1.5f
+//                Log.d("ccccccc","x:"+x+"  y:"+y)
+//                Log.d("ccccccc",""+sqrt(pow(((rectF.right - width/2f)).toDouble(), 2.toDouble()) - pow(x.toDouble(), 2.toDouble()))+"       "+sqrt(pow(((rectF.right+strokeWidth) -width/2f).toDouble(), 2.toDouble()) - pow(x.toDouble(), 2.toDouble())))
+//                Log.d("ccccccc",""+-sqrt(pow(((rectF.right - width/2f) ).toDouble(), 2.toDouble()) - pow(x.toDouble(), 2.toDouble()))+"       "+-sqrt(pow(((rectF.right+strokeWidth) -width/2f).toDouble(), 2.toDouble()) - pow(x.toDouble(), 2.toDouble())))
+                if (!(y < sqrt(pow(((rectF.right - (width)/2f-touchWidth)).toDouble(), 2.toDouble()) - pow(x.toDouble(), 2.toDouble())))
+                    && y <= sqrt(pow(((rectF.right+touchWidth) -width/2f).toDouble(), 2.toDouble()) - pow(x.toDouble(), 2.toDouble()))
+                    || y <= -sqrt(pow(((rectF.right - (width)/2f-touchWidth) ).toDouble(), 2.toDouble()) - pow(x.toDouble(), 2.toDouble()))
+                    && !(y < -sqrt(pow(((rectF.right+touchWidth) -width/2f).toDouble(), 2.toDouble()) - pow(x.toDouble(), 2.toDouble())))) {
+                    var rad:Double=0.toDouble()
+                    if(x>=0)
+                        rad = atan((-y / x).toDouble())
+                    else
+                        rad= PI+atan((-y / x).toDouble())
                     var angle = 0.toDouble()
                     if (x >= 0 && y < 0)
                         angle = 90 - rad * 360 / PI / 2
@@ -188,9 +187,10 @@ class CircleSelector : View {
                         angle = 180 + 90 - rad * 360 / PI / 2
                     else if (x < 0f && y <= 0)
                         angle = 180 + 90 - rad * 360 / PI / 2
-                    update((angle * max / 360).toFloat())
+//                    update((angle * max / 180-(startAngle)*PI/180).toFloat())
+                    update((((2*PI-rad+(360-startAngle)*PI/180))*max/2/PI).toFloat())
+                    isHold = true
                 }
-                isHold = true
                 return@OnTouchListener true
             }
             MotionEvent.ACTION_MOVE -> {
@@ -202,10 +202,9 @@ class CircleSelector : View {
                     if (y <= 0) {
                         rad =acos(x/sqrt(pow(x.toDouble(),2.toDouble())+pow(y.toDouble(),2.toDouble()))).toFloat()
                     } else {
-                        rad = 6 - acos(x / sqrt(pow(x.toDouble(), 2.toDouble()) + pow(y.toDouble(), 2.toDouble()))).toFloat()
+                        rad = (2* PI - acos(x / sqrt(pow(x.toDouble(), 2.toDouble()) + pow(y.toDouble(), 2.toDouble())))).toFloat()
                     }
-                    Log.d("aaaaaaaaaaaa",rad.toString())
-                    update(((2*PI-rad+(360-startAngle)*PI/180)*max/2/PI).toFloat())
+                    update((((2*PI-rad+(360-startAngle)*PI/180))*max/2/PI).toFloat())
                 }
 
                 return@OnTouchListener true
