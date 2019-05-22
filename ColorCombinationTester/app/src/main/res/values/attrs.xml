@@ -9,4 +9,8 @@
         <attr name="selectorColor" format="color|reference"/>
         <attr name="textColor" format="color|reference"/>
     </declare-styleable>
+    <declare-styleable name="ColorSeekBar">
+        <attr name="max" format="float|reference"/>
+        <attr name="unique_color" format="enum"/>
+    </declare-styleable>
 </resources>
