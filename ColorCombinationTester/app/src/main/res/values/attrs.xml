@@ -3,14 +3,17 @@
     <declare-styleable name="CircleSelector">
         <attr name="radius" format="float|reference"/>
         <attr name="strokeWidth" format="float|reference"/>
-        <attr name="max" format="float|reference"/>
+        <attr name="max_circle" format="float|reference"/>
         <attr name="startAngle" format="float|reference"/>
         <attr name="circleColor" format="color|reference"/>
         <attr name="selectorColor" format="color|reference"/>
         <attr name="textColor" format="color|reference"/>
     </declare-styleable>
-    <declare-styleable name="ColorSeekBar">
+    <declare-styleable name="RgbSeekBar">
         <attr name="max" format="float|reference"/>
-        <attr name="unique_color" format="enum"/>
+        <attr name="primary_color" format="integer"/>
+    </declare-styleable>
+    <declare-styleable name="SVSquareSelector">
+        <attr name="accuracy" format="float"/>
     </declare-styleable>
 </resources>
