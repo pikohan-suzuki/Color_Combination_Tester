@@ -12,35 +12,104 @@
             android:layout_width="0dp"
             android:layout_height="0dp" app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/guideline2"
             app:radius="300"
             app:strokeWidth="50"
-            app:max="100"
+            app:max_circle="255"
             app:startAngle="270"
             app:circleColor="#FFC107"
             app:selectorColor="#2196F3"
             app:textColor="#007BFF"
             app:layout_constraintBottom_toTopOf="@+id/guideline" app:layout_constraintHorizontal_bias="1.0"
-            app:layout_constraintVertical_bias="1.0"/>
+            app:layout_constraintVertical_bias="1.0" android:layout_marginTop="8dp"/>
     <Button
             android:text="Button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/button2"
             android:layout_marginBottom="8dp"
-            app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintStart_toStartOf="@+id/guideline6"
             android:layout_marginTop="8dp" app:layout_constraintTop_toTopOf="@+id/guideline"
             app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp"
-            app:layout_constraintVertical_bias="0.0"/>
+            app:layout_constraintVertical_bias="0.0" android:layout_marginStart="8dp"/>
     <SeekBar
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:id="@+id/seekBar" android:layout_marginTop="8dp"
             app:layout_constraintTop_toBottomOf="@+id/button2" app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginEnd="8dp" app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginStart="8dp" android:max="100"/>
+            android:layout_marginStart="8dp" android:max="255" android:layout_marginBottom="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"/>
     <android.support.constraint.Guideline android:layout_width="wrap_content" android:layout_height="wrap_content"
                                           android:id="@+id/guideline"
                                           android:orientation="horizontal"
-                                          app:layout_constraintGuide_percent="0.7"/>
+                                          app:layout_constraintGuide_percent="0.85"/>
+    <android.support.constraint.Guideline android:layout_width="wrap_content" android:layout_height="wrap_content"
+                                          android:id="@+id/guideline2"
+                                          android:orientation="horizontal"
+                                          app:layout_constraintGuide_percent="0.6"/>
+    <com.amebaownd.pikohan_nwiatori.colorcombinationtester.View.RgbSeekBar
+            android:id="@+id/red_colorSeekBar"
+            app:max="255"
+            app:primary_color="0"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp"
+            app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="8dp"
+            app:layout_constraintBottom_toTopOf="@+id/guideline3" android:layout_marginTop="8dp"
+            app:layout_constraintTop_toTopOf="parent" android:layout_marginBottom="8dp"/>
+    <com.amebaownd.pikohan_nwiatori.colorcombinationtester.View.RgbSeekBar
+            android:id="@+id/green_colorSeekBar"
+            app:max="255"
+            app:primary_color="1"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp"
+            app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="8dp"
+            app:layout_constraintBottom_toTopOf="@+id/guideline4" android:layout_marginTop="8dp"
+            app:layout_constraintTop_toTopOf="@+id/guideline3" android:layout_marginBottom="8dp"/>
+    <com.amebaownd.pikohan_nwiatori.colorcombinationtester.View.RgbSeekBar
+            android:id="@+id/blue_colorSeekBar"
+            app:max="255"
+            app:primary_color="2"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp"
+            app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="8dp"
+            app:layout_constraintBottom_toTopOf="@+id/guideline5" android:layout_marginTop="8dp"
+            app:layout_constraintTop_toTopOf="@+id/guideline4" android:layout_marginBottom="8dp"/>
+    <android.support.constraint.Guideline android:layout_width="wrap_content" android:layout_height="wrap_content"
+                                          android:id="@+id/guideline3"
+                                          android:orientation="horizontal"
+                                          app:layout_constraintGuide_percent="0.1"/>
+    <android.support.constraint.Guideline android:layout_width="wrap_content" android:layout_height="wrap_content"
+                                          android:id="@+id/guideline4"
+                                          android:orientation="horizontal"
+                                          app:layout_constraintGuide_percent="0.2"/>
+    <android.support.constraint.Guideline android:layout_width="wrap_content" android:layout_height="wrap_content"
+                                          android:id="@+id/guideline5"
+                                          android:orientation="horizontal"
+                                          app:layout_constraintGuide_percent="0.3"/>
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/rgb"
+            app:layout_constraintTop_toTopOf="@+id/guideline"
+            android:layout_marginEnd="8dp" app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginStart="8dp" tools:text="asdfasdf"
+            app:layout_constraintEnd_toStartOf="@+id/guideline6" android:layout_marginBottom="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+    <android.support.constraint.Guideline android:layout_width="wrap_content" android:layout_height="wrap_content"
+                                          android:id="@+id/guideline6"
+                                          android:orientation="vertical"
+                                          app:layout_constraintGuide_percent="0.5"/>
+    <com.amebaownd.pikohan_nwiatori.colorcombinationtester.View.SVSquareSelector
+            android:id="@+id/hsv_selector"
+            android:layout_width="0dp"
+            android:layout_height="0dp" android:layout_marginEnd="8dp"
+            app:layout_constraintEnd_toEndOf="parent" app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginStart="8dp" android:layout_marginBottom="8dp"
+            app:layout_constraintBottom_toTopOf="@+id/guideline2" android:layout_marginTop="8dp"
+            app:layout_constraintTop_toTopOf="@+id/guideline5"
+            app:accuracy="255"/>
 </android.support.constraint.ConstraintLayout>
