@@ -6,18 +6,32 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.SeekBar
 import android.widget.TextView
-import com.amebaownd.pikohan_nwiatori.colorcombinationtester.View.CircleSelector
-import com.amebaownd.pikohan_nwiatori.colorcombinationtester.View.RgbSeekBar
-import com.amebaownd.pikohan_nwiatori.colorcombinationtester.View.ColorSeekBarChangeListener
-import com.amebaownd.pikohan_nwiatori.colorcombinationtester.View.SVSquareSelector
+import com.amebaownd.pikohan_nwiatori.colorcombinationtester.View.*
 import java.util.*
 
-class MainActivity : AppCompatActivity() , ColorSeekBarChangeListener {
-    override fun onValueChanged(color:Int) {
+class MainActivity : AppCompatActivity() , ColorSeekBarChangeListener ,SVSquareSelectorChangeListener,CircleSelectorChangeListener{
+    override fun onHueValueChanged(color: Int) {
         redRgbSeekBar.updateColorFromOther(color)
         greenRgbSeekBar.updateColorFromOther(color)
         blueRgbSeekBar.updateColorFromOther(color)
         svSelector.updateFromOther(color)
+        rgbTextView.text="R: "+ Color.red(color)+" G: "+Color.green(color) + " B: "+Color.blue(color)
+    }
+
+    override fun onSVValueChanged(color: Int) {
+        redRgbSeekBar.updateColorFromOther(color)
+        greenRgbSeekBar.updateColorFromOther(color)
+        blueRgbSeekBar.updateColorFromOther(color)
+        circleSelector.updateFromOther(color)
+        rgbTextView.text="R: "+ Color.red(color)+" G: "+Color.green(color) + " B: "+Color.blue(color)
+    }
+
+    override fun onRGBValueChanged(color:Int) {
+        redRgbSeekBar.updateColorFromOther(color)
+        greenRgbSeekBar.updateColorFromOther(color)
+        blueRgbSeekBar.updateColorFromOther(color)
+        svSelector.updateFromOther(color)
+        circleSelector.updateFromOther(color)
         rgbTextView.text="R: "+ Color.red(color)+" G: "+Color.green(color) + " B: "+Color.blue(color)
     }
 
@@ -40,32 +54,9 @@ class MainActivity : AppCompatActivity() , ColorSeekBarChangeListener {
         redRgbSeekBar.setColorSeekBarChangeListener(this)
         greenRgbSeekBar.setColorSeekBarChangeListener(this)
         blueRgbSeekBar.setColorSeekBarChangeListener(this)
-
-        val rand = Random()
-
-        findViewById<Button>(R.id.button2).setOnClickListener{
-            circleSelector.update(rand.nextInt(100).toFloat())
-            val aaa =rand.nextInt(16581375)
-            redRgbSeekBar.updateColorFromMyself(aaa)
-            greenRgbSeekBar.updateColorFromMyself(aaa)
-            blueRgbSeekBar.updateColorFromMyself(aaa)
-            rgbTextView.text="R: "+ Color.red(aaa)+" G: "+Color.green(aaa) + " B: "+Color.blue(aaa)
-        }
-
-        findViewById<SeekBar>(R.id.seekBar).setOnSeekBarChangeListener(seekBarChangeListener(circleSelector))
+        svSelector.setSVSquareSelectorChangeListener(this)
+        circleSelector.setCircleSelectorChangeListener(this)
     }
 
-    private class seekBarChangeListener(private val circleSelector: CircleSelector):SeekBar.OnSeekBarChangeListener{
-        override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-            circleSelector.update(progress.toFloat())
-        }
 
-        override fun onStartTrackingTouch(p0: SeekBar?) {
-
-        }
-
-        override fun onStopTrackingTouch(p0: SeekBar?) {
-
-        }
-    }
 }
