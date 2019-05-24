@@ -9,7 +9,7 @@ import com.amebaownd.pikohan_nwiatori.colorcombinationtester.R
 import java.util.*
 
 interface ColorSeekBarChangeListener : EventListener {
-    fun onValueChanged(color:Int)
+    fun onRGBValueChanged(color:Int)
 }
 enum class SeekBarColor(val color: Int) {
     RED(0),
@@ -22,7 +22,7 @@ class RgbSeekBar : View {
     //管理する色R/G/B
     private var primaryColor = SeekBarColor.RED
     //現在の色
-    private var currentColor = Color.rgb(0, 0, 0)
+    private var currentColor = Color.RED
     //Bar描画用のPaint
     private var paint = Paint()
     //色変更時のイベントリスナー
@@ -153,10 +153,10 @@ class RgbSeekBar : View {
     }
 
 
-    fun updateColorFromMyself(color: Int) {
+    private fun updateColorFromMyself(color: Int) {
         currentColor = color
         if(changeListener!=null)
-            changeListener!!.onValueChanged(color)
+            changeListener!!.onRGBValueChanged(color)
         invalidate()
     }
     fun updateColorFromOther(color:Int){
