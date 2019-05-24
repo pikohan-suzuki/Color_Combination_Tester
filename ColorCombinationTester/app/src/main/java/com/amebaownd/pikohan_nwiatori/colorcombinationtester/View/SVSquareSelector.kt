@@ -3,6 +3,7 @@ package com.amebaownd.pikohan_nwiatori.colorcombinationtester.View
 import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
+import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import com.amebaownd.pikohan_nwiatori.colorcombinationtester.R
@@ -62,23 +63,44 @@ class SVSquareSelector : View {
   private val onTouchListener = OnTouchListener { view: View, motionEvent: MotionEvent ->
     when (motionEvent.action) {
       MotionEvent.ACTION_DOWN -> {
-        if (motionEvent.x in startX..endX) {
-          val hsv = FloatArray(3)
-          Color.RGBToHSV(Color.red(currentColor), Color.green(currentColor), Color.blue(currentColor), hsv)
-          hsv[1] = (motionEvent.x - startX) / height
-          hsv[2] = 1 - (motionEvent.y / height)
-          updateFromMyself(Color.HSVToColor(hsv))
-        }
+        var x = motionEvent.x
+        var y = motionEvent.y
+        if (x < 0)
+          x = 0f
+        else if (x > width)
+          x = width.toFloat()
+        if(y<0)
+          y=0f
+        else if(y>height)
+          y=height.toFloat()
+        val hsv = FloatArray(3)
+        Color.RGBToHSV(Color.red(currentColor), Color.green(currentColor), Color.blue(currentColor), hsv)
+        hsv[1] = (x - startX) / height
+        hsv[2] = 1 - (y / height)
+        updateFromMyself(Color.HSVToColor(hsv))
+
         return@OnTouchListener true
       }
       MotionEvent.ACTION_MOVE -> {
-        if (motionEvent.x in startX..endX) {
-          val hsv = FloatArray(3)
-          Color.RGBToHSV(Color.red(currentColor), Color.green(currentColor), Color.blue(currentColor), hsv)
-          hsv[1] = (motionEvent.x - startX) / height
-          hsv[2] = 1 - (motionEvent.y / height)
-          updateFromMyself(Color.HSVToColor(hsv))
-        }
+        var x = motionEvent.x
+        var y = motionEvent.y
+
+        Log.d("wwwwww",x.toString())
+        if (x < 0)
+          x = 0f
+        else if (x > width)
+          x=width.toFloat()
+        if(y<0)
+          y=0f
+        else if(y>height)
+          y=height.toFloat()
+        Log.d("wwwwww",x.toString())
+        val hsv = FloatArray(3)
+        Color.RGBToHSV(Color.red(currentColor), Color.green(currentColor), Color.blue(currentColor), hsv)
+        hsv[1] = (x - startX) / height
+        hsv[2] = 1 - (y / height)
+        updateFromMyself(Color.HSVToColor(hsv))
+
         return@OnTouchListener true
       }
       else ->
