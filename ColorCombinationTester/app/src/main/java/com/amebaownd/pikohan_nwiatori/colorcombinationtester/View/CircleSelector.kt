@@ -8,8 +8,11 @@ import android.view.MotionEvent
 import android.view.View
 import com.amebaownd.pikohan_nwiatori.colorcombinationtester.R
 import java.lang.Math.pow
+import java.util.*
 import kotlin.math.*
-
+interface CircleSelectorChangeListener : EventListener {
+    fun onHueValueChanged(color: Int)
+}
 class CircleSelector : View {
     constructor(context: Context) : super(context, null)
     constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {
@@ -35,7 +38,7 @@ class CircleSelector : View {
     private var selectorPaint = Paint()
     private var textPaint = Paint()
     //360°当たりのデータ量
-    private var max = 100f
+    private var max = 360f
     //データ０の位置(x/360°)
     private var startAngle = 0f
     //表示するデータ
@@ -43,13 +46,17 @@ class CircleSelector : View {
     //ホールド中か否か
     private var isHold = false
 
+    private var listener : CircleSelectorChangeListener?=null
+
+    private var currentColor=Color.RED
+
     private var longSide=0
     private var shortSide=0
     private fun initView(attrs: AttributeSet?) {
         val typedArray = context.obtainStyledAttributes(attrs, R.styleable.CircleSelector)
         setRadius(typedArray.getFloat(R.styleable.CircleSelector_radius, 30f))
         setStrokeWidth(typedArray.getFloat(R.styleable.CircleSelector_strokeWidth, 3f))
-        setMax(typedArray.getFloat(R.styleable.CircleSelector_max, 100f))
+        setMax(typedArray.getFloat(R.styleable.CircleSelector_max_circle, 100f))
         setStartAngle(typedArray.getFloat(R.styleable.CircleSelector_startAngle, 0f))
         setCircleColor(typedArray.getColor(R.styleable.CircleSelector_circleColor, Color.BLACK))
         setSelectorColor(typedArray.getColor(R.styleable.CircleSelector_selectorColor, Color.RED))
@@ -73,7 +80,12 @@ class CircleSelector : View {
             rectF.right=(width+height)/2f-strokeWidth
             rectF.bottom=height-strokeWidth
         }
-        canvas!!.drawArc(rectF, startAngle,data * 360 / max, false, circlePaint) //円の描画
+        val gradientColors = IntArray(31)
+        for(i in 0..360 step 12)
+            gradientColors[i/12]=Color.HSVToColor(floatArrayOf(((i+360-startAngle)%360).toFloat(),1f,1f))
+        val sweepGradient = SweepGradient(width/2f,height/2f, gradientColors,null)
+        circlePaint.shader=sweepGradient
+        canvas!!.drawArc(rectF, startAngle,360f, false, circlePaint) //円の描画
         canvas.drawArc(rectF.left + strokeWidth, rectF.top + strokeWidth, rectF.right - strokeWidth,
             rectF.bottom - strokeWidth, startAngle, 360f, true, Paint().apply { this.color = Color.WHITE })
         canvas.drawCircle((width / 2f + (rectF.right-width/2f) * cos(2*PI-(data/max*2*PI)+(360-startAngle)*PI/180)).toFloat(), height / 2f - (rectF.right-width/2f)  * sin(2*PI-(data/max*2*PI)+(360-startAngle)*PI/180).toFloat(),
@@ -95,12 +107,28 @@ class CircleSelector : View {
         }
     }
 
-    fun update(data: Float) {
-        if (data % max == 0f)
+    private fun updateFromMyself(data: Float) {
+        var hsv = FloatArray(3)
+        Color.RGBToHSV(Color.red(currentColor),Color.green(currentColor),Color.blue(currentColor),hsv)
+        if (data % max == 0f) {
             setData(max)
-        else
+            currentColor=Color.HSVToColor(hsv.apply { this[0]=max })
+        }
+        else {
             setData(data % max)
+            currentColor = Color.HSVToColor(hsv.apply { this[0] = data % max })
+        }
         setCenterRange()
+        invalidate()
+        if(listener!=null)
+            listener!!.onHueValueChanged(currentColor)
+    }
+
+    fun updateFromOther(color:Int){
+        currentColor=color
+        var hsv = FloatArray(3)
+        Color.RGBToHSV(Color.red(currentColor),Color.green(currentColor),Color.blue(currentColor),hsv)
+        data=hsv[0]
         invalidate()
     }
 
@@ -143,6 +171,10 @@ class CircleSelector : View {
 
     fun setData(data: Float) {
         this.data = data
+    }
+
+    fun setCircleSelectorChangeListener(listener: CircleSelectorChangeListener){
+        this.listener=listener
     }
 
     private val onTouchListener = View.OnTouchListener { view: View, motionEvent: MotionEvent ->
@@ -188,7 +220,7 @@ class CircleSelector : View {
                     else if (x < 0f && y <= 0)
                         angle = 180 + 90 - rad * 360 / PI / 2
 //                    update((angle * max / 180-(startAngle)*PI/180).toFloat())
-                    update((((2*PI-rad+(360-startAngle)*PI/180))*max/2/PI).toFloat())
+                    updateFromMyself((((2*PI-rad+(360-startAngle)*PI/180))*max/2/PI).toFloat())
                     isHold = true
                 }
                 return@OnTouchListener true
@@ -204,7 +236,7 @@ class CircleSelector : View {
                     } else {
                         rad = (2* PI - acos(x / sqrt(pow(x.toDouble(), 2.toDouble()) + pow(y.toDouble(), 2.toDouble())))).toFloat()
                     }
-                    update((((2*PI-rad+(360-startAngle)*PI/180))*max/2/PI).toFloat())
+                    updateFromMyself((((2*PI-rad+(360-startAngle)*PI/180))*max/2/PI).toFloat())
                 }
 
                 return@OnTouchListener true
